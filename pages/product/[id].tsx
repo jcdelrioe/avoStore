@@ -1,26 +1,28 @@
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 
+import Layout from '@components/Layout/Layout'
+import ProductSummary from '@components/ProductSummary/ProductSummary'
+
 const ProductPage = () => {
-  const [product, setProduct] = useState<TProduct>([])
   const { query } = useRouter()
+  const [product, setProduct] = useState<TProduct | null>(null)
 
   useEffect(() => {
     if (query.id) {
       window
         .fetch(`/api/avo/${query.id}`)
         .then((response) => response.json())
-        .then((data) => setProduct(data))
-        .catch((error) => console.error(error.message))
+        .then((data: TProduct) => {
+          setProduct(data)
+        })
     }
-  }, [query])
-  console.log(product)
+  }, [query.id])
 
   return (
-    <section>
-      <h1>Página producto:</h1>
-      <h3>{product.name}</h3>
-    </section>
+    <Layout>
+      {product == null ? null : <ProductSummary product={product} />}
+    </Layout>
   )
 }
 
